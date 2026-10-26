@@ -188,7 +188,7 @@ with st.expander("批量导入（粘贴文本 或 上传 CSV）"):
         for e in st.session_state.bulk_errs:
             st.error(e)
 
-# ---------------- 已添加列表（纯文字表格排版） + 导出 ----------------
+# ---------------- 已添加列表 + 导出 ----------------
 slots = st.session_state.slots
 
 if slots:
@@ -224,7 +224,7 @@ if slots:
     csv_bytes = df_show.to_csv(index=False).encode("utf-8-sig")
     
     c_export, c_check, c_clear = st.columns([2, 2, 1])
-    c_export.download_button("导出 CSV", data=csv_bytes, file_name="时间段.csv", mime="text/csv", use_container_width=True)
+    c_export.download_button("导出表格", data=csv_bytes, file_name="时间段.csv", mime="text/csv", use_container_width=True)
     
     if c_check.button("检查冲突", type="primary", use_container_width=True):
         st.session_state.checked = True
@@ -290,9 +290,8 @@ if slots:
             removed = [s for s in slots if s["id"] not in keep_ids]
             kept = [s for s in slots if s["id"] in keep_ids]
 
-            st.warning(f"按结束时间贪心：最多可同时保留 {len(kept)} 个时间段，最少需要删掉 {len(removed)} 个。")
             if removed:
-                st.warning("建议删除：\n\n" + "\n".join(f"- **{s['name']}**（{s['day']} {fmt(s['start'])}–{fmt(s['end'])}）" for s in removed))
-                st.info("删除后保留（互不冲突）：\n\n" + "\n".join(f"- {s['name']}（{s['day']} {fmt(s['start'])}–{fmt(s['end'])}）" for s in kept))
+                st.warning("建议删除以下时间段：\n\n" + "\n".join(f"- {s['name']}（{s['day']} {fmt(s['start'])}–{fmt(s['end'])}）" for s in removed))
+                st.success("删除后，以下时间段可以保留：\n\n" + "\n".join(f"- {s['name']}（{s['day']} {fmt(s['start'])}–{fmt(s['end'])}）" for s in kept))
 else:
     st.info("还没有任何时间段，请在上方添加。")
